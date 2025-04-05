@@ -1,6 +1,9 @@
 "use client";
 import { setToken } from "./tokenStore";
 const sendMessageToFlutter = () => {
+  // window 객체 존재 여부 확인
+  if (typeof window === "undefined") return;
+
   console.log("Attempting to send message to Flutter...");
 
   try {
@@ -40,7 +43,6 @@ const receiveTokenFromFlutter = () => {
 const requestTokenFromFlutter = () => {
   // window 객체 존재 여부 확인
   if (typeof window === "undefined") return;
-  
   try {
     if (window.FlutterBridge) {
       console.log("Requesting token from Flutter...");
