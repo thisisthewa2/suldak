@@ -30,20 +30,3 @@ body {
   font-family: "Pretendard", sans-serif;
 }
 
-/* 웹뷰 전용 - 디바이스 폰트 설정 무시 (최소한의 스타일만) */
-@media screen {
-  * {
-    -webkit-text-size-adjust: 100%;
-    -moz-text-size-adjust: 100%;
-    -ms-text-size-adjust: 100%;
-    text-size-adjust: 100%;
-  }
-
-  /* 한글 줄바꿈 최적화 */
-  p,
-  div,
-  span {
-    word-break: keep-all;
-    word-wrap: break-word;
-  }
-}
