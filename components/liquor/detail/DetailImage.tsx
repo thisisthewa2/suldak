@@ -28,16 +28,15 @@ function DetailImage({ name = "술", imgUrl }: DetailImageProps) {
   console.log("[Image] 🖼 Using image source:", imageSource);
 
   return (
-    <section className="w-full">
+    <section className="flex">
       <Image
-        className="h-auto w-full"
+        className=""
         src={imageSource}
         alt={`${name} 사진`}
-        width={800}
-        height={800}
-        priority
-        unoptimized={isValidImageUrl(imgUrl)}
-        sizes="100vw"
+        height={400}
+        width={500}
+        priority // 이미지를 우선적으로 로드
+        unoptimized={isValidImageUrl(imgUrl)} // 외부 이미지는 Next.js 최적화를 건너뜀
       />
     </section>
   );

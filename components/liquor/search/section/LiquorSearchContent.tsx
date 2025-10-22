@@ -23,17 +23,11 @@ function LiquorSearchContent({
   searchParams: URLSearchParams;
 }) {
   const router = useRouter();
-
-  // searchKey 생성 - 빈 문자열이 아니도록 보장
-  const searchKey = searchParams.toString() || "default";
-
-  // 무한스크롤 상태 - searchKey를 key로 사용하여 URL 변경 시 자동 초기화
-  const [pageNum, setPageNum] = useState(() => 0);
-  const [liquors, setLiquors] = useState<SearchLiquor[]>(() => []);
-  const [hasNext, setHasNext] = useState(() => true);
-  const [isFirstLoading, setIsFirstLoading] = useState(() => true);
-
-  const queryKey = `${searchKey}-page-${pageNum}`;
+  // 무한스크롤 상태
+  const [pageNum, setPageNum] = useState(0);
+  const [liquors, setLiquors] = useState<SearchLiquor[]>([]);
+  const [hasNext, setHasNext] = useState(true);
+  const [isFirstLoading, setIsFirstLoading] = useState(true);
 
   const { data, isLoading, error } = useLiquorSearch(
     {
@@ -47,22 +41,13 @@ function LiquorSearchContent({
       liquorDetailPriKeys: searchParams.get("subKey") || "",
       pageNum,
     },
-    queryKey,
+    searchParams.toString() + `-page-${pageNum}`,
   );
 
   const totalCount = data?.data.totalElements ?? liquors.length;
 
-  // searchKey 변경 시 상태 초기화
   useEffect(() => {
-    setPageNum(0);
-    setLiquors([]);
-    setHasNext(true);
-    setIsFirstLoading(true);
-  }, [searchKey]);
-
-  // 데이터 업데이트
-  useEffect(() => {
-    if (data?.data?.content) {
+    if (data) {
       if (pageNum === 0) {
         setLiquors(data.data.content);
       } else {
@@ -73,18 +58,13 @@ function LiquorSearchContent({
     }
   }, [data, pageNum]);
 
-  // 캐시에서 즉시 반환되는 경우 처리
+  // 검색 조건이 바뀌면 초기화
   useEffect(() => {
-    // 로딩도 아닌데 데이터가 있으면 캐시에서 온 것
-    if (!isLoading && data?.data?.content) {
-      setIsFirstLoading(false);
-      // 캐시된 데이터로 liquors 설정
-      if (pageNum === 0 && liquors.length === 0) {
-        setLiquors(data.data.content);
-        setHasNext(!data.data.last);
-      }
-    }
-  }, [isLoading, data, pageNum]);
+    setPageNum(0);
+    setLiquors([]);
+    setHasNext(true);
+    setIsFirstLoading(true);
+  }, [searchParams.toString()]);
 
   // 무한스크롤 감지용 ref
   const observerRef = useRef<HTMLDivElement | null>(null);
@@ -178,7 +158,7 @@ function LiquorSearchContent({
           <div />
         </SearchInfoSection>
       )}
-      {isFirstLoading && !data ? (
+      {isFirstLoading ? (
         <section className="flex h-full w-full flex-col items-center justify-center">
           <div className="mt-[10px]">
             <LoadingCard />
@@ -193,7 +173,7 @@ function LiquorSearchContent({
             <LoadingCard />
           </div>
         </section>
-      ) : liquors.length === 0 && !isLoading ? (
+      ) : liquors.length === 0 ? (
         <NoResultSection />
       ) : (
         <>
